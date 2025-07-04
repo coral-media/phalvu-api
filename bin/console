@@ -1,0 +1,32 @@
+#!/usr/local/bin/php
+
+<?php
+use App\Kernel;
+use Psr\Log\LoggerInterface;
+
+
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+try {
+    $application = (new Kernel(true));
+
+    $arguments = [];
+    foreach ($argv as $k => $arg) {
+        if ($k === 1) {
+            $arguments['task'] = $arg;
+        } elseif ($k === 2) {
+            $arguments['action'] = $arg;
+        } elseif ($k >= 3) {
+            $arguments['params'][] = $arg;
+        }
+    }
+    $application->getApplication()->handle($arguments);
+
+
+} catch (Throwable $e) {
+    /** @var LoggerInterface $logger */
+    $logger = container('logger');
+    $logger->error(sprintf('%s', $e->getMessage()));
+    fwrite(STDERR, $e->getMessage() . PHP_EOL);
+    exit(1);
+}

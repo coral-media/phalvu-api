@@ -1,0 +1,31 @@
+###> phalcon/framework ###
+/.env.local
+/.env.*.local
+/var/
+/vendor/
+.phalcon
+###< phalcon/framework ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+###> jetbrains/ide ###
+.idea
+###< jetbrains/ide ###
+
+###> macOS/filesystem ###
+.DS_Store
+###< macOS/filesystem ###
+
+###> sebastianbergmann/phpunit ###
+phpunit.xml
+.phpunit.cache
+.phpunit.result.cache
+###< sebastianbergmann/phpunit ###
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+
