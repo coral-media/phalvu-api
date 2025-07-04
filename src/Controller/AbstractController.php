@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Market\YahooFinances\ChartQuery;
 use Phalcon\Cache\CacheInterface;
 use Phalcon\Config\ConfigInterface;
 use Phalcon\Db\Adapter\AdapterInterface;
@@ -23,7 +22,6 @@ use Psr\Log\LoggerInterface;
  * @property LoggerInterface $logger
  * @property ConfigInterface $config
  * @property CacheInterface $cache
- * @property ChartQuery $yahooQuery
  * @property AdapterInterface $db
  */
 abstract class AbstractController extends Controller

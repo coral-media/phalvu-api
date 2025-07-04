@@ -20,10 +20,8 @@ use App\Provider\RouterCliProvider;
 use App\Provider\RouterHttpProvider;
 use App\Provider\SecurityProvider;
 use App\Provider\SessionProvider;
-use App\Provider\TradestationProvider;
 use App\Provider\UrlProvider;
 use App\Provider\ViewProvider;
-use App\Provider\YahooQueryProvider;
 
 return [
     ConfigProvider::class,
@@ -39,6 +37,4 @@ return [
     SecurityProvider::class,
     DatabaseProvider::class,
     HttpClientProvider::class,
-    YahooQueryProvider::class,
-    TradestationProvider::class,
 ];

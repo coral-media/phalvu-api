@@ -76,24 +76,6 @@ return [
                     ],
                 ],
             ],
-            'tradestation' => [
-                'namespace' => 'App\\Controller\\Tradestation',
-                'prefix' => '/tradestation/',
-                'routes' => [
-                    'webhook_default' => [
-                        'pattern'    => 'webhook/:action',
-                        'controller' => 'webhook',
-                        'methods' => ['POST', 'GET'],
-                        'action'     => 1,
-                    ],
-                    'auth_default' => [
-                        'pattern'    => 'auth/:action',
-                        'controller' => 'authorization',
-                        'methods' => ['POST', 'GET'],
-                        'action'     => 1,
-                    ],
-                ],
-            ],
         ],
     ],
     'cli' => [
