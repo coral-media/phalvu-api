@@ -66,16 +66,9 @@ $config = [
             ],
         ],
     ],
-    'tradestation' => [
-        'apiUri' => env('TRADESTATION_API_URI'),
-        'clientId'     => env('TRADESTATION_CLIENT_ID'),
-        'clientSecret' => env('TRADESTATION_CLIENT_SECRET'),
-        'accountId'     => env('TRADESTATION_EQUITY_ACCOUNT_ID'),
-        'authCallbackUri'  => env('TRADESTATION_AUTH_CALLBACK_URI'),
-        'authUri'      => env('TRADESTATION_AUTH_URI'),
-        'logoutUri'    => env('TRADESTATION_AUTH_LOGOUT_URI'),
-        'tokenUri'     => env('TRADESTATION_AUTH_TOKEN_URI'),
-        'refreshToken' => env('TRADESTATION_AUTH_REFRESH_TOKEN'),
+    'jwt' => [
+        'secret' => env('JWT_SECRET'),
+        'expiration' => 3600,
     ],
 ];
 

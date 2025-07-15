@@ -11,6 +11,7 @@ namespace App\Command;
 
 use Phalcon\Cli\Task;
 use Phalcon\Db\Adapter\Pdo\AbstractPdo;
+use Phalcon\Db\Enum;
 
 class MigrationTask extends Task
 {
@@ -153,7 +154,7 @@ PHP;
 
     private function getExecutedVersions(AbstractPdo $db, string $table): array
     {
-        $result = $db->fetchAll("SELECT version FROM {$table}", \Phalcon\Db\Enum::FETCH_ASSOC);
+        $result = $db->fetchAll("SELECT version FROM {$table}", Enum::FETCH_ASSOC);
         return array_column($result, 'version');
     }
 

@@ -34,6 +34,12 @@ return [
                 'namespace' => 'App\\Controller\\Api',
                 'prefix' => '/api/',
                 'routes' => [
+                    'security_login' => [
+                        'pattern'    => 'security/login',
+                        'controller' => 'security',
+                        'action'     => 'login',
+                        'methods'    => ['POST'],
+                    ],
                     'default_get_collection' => [
                         'pattern' => ':controller',
                         'controller' => 1,

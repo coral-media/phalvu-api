@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace App\Provider;
 
+use App\Http\Middleware\JwtTokenAuth;
 use Phalcon\Cli\Dispatcher as CliDispatcher;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
@@ -29,14 +30,33 @@ class DispatcherProvider implements ServiceProviderInterface
         $di->set($this->providerName, function () use ($eventsManager, $di) {
             if ($di->getShared('app.isCli') === false) {
                 $dispatcher = new MvcDispatcher();
-                $dispatcher->setDefaultNamespace('App\Controller');
-            } else {
-                $dispatcher = new CliDispatcher();
-                $dispatcher->setDefaultNamespace('App\Command');
+                $dispatcher->setEventsManager($eventsManager);
+
+                $request = $di->getShared('request');
+                $uri = trim($request->getURI(), '/');
+
+                $segments = explode('/', $uri);
+                $firstSegment = $segments[0] ?? null;
+
+                // Build namespace dynamically
+                if ($firstSegment && preg_match('/^[a-z0-9_-]+$/i', $firstSegment)) {
+                    $namespace = 'App\\Controller\\' . ucfirst($firstSegment);
+                } else {
+                    $namespace = 'App\\Controller';
+                }
+
+                $dispatcher->setDefaultNamespace($namespace);
+
+                // Attach middleware only for certain namespaces
+                if ('App\\Controller\\Api' === $namespace) {
+                    $eventsManager->attach('dispatch:beforeExecuteRoute', new JwtTokenAuth());
+                }
+
+                return $dispatcher;
             }
 
-            $dispatcher->setEventsManager($eventsManager);
-
+            $dispatcher = new CliDispatcher();
+            $dispatcher->setDefaultNamespace('App\\Command');
             return $dispatcher;
         });
     }
