@@ -9,6 +9,7 @@
 
 namespace App\Command;
 
+use App\Http\Middleware\JwtToken;
 use Phalcon\Cli\Task;
 use Random\RandomException;
 
@@ -27,8 +28,8 @@ class MainTask extends Task
         }
 
         // Use internal generator instead of shell command
-        $jwtSecret = $this->generateRandomSecret(32);
-        $appSecret = sha1($this->generateRandomSecret(32));
+        $jwtSecret = JwtToken::generateRandomSecret();
+        $appSecret = sha1(rand() . rand() . rand());
 
         $contents = file_get_contents($envFile);
 
@@ -51,24 +52,5 @@ class MainTask extends Task
         echo "Environment secrets updated successfully:\n";
         echo "- APP_SECRET: {$appSecret}\n";
         echo "- JWT_SECRET: {$jwtSecret}\n";
-    }
-
-    /**
-     * Generates a secure random string equivalent to:
-     * tr -dc 'A-Za-z0-9!@#$%^&*()-_=+[]{}<>?' </dev/urandom | head -c 32
-     *
-     * @throws RandomException
-     */
-    private function generateRandomSecret(int $length = 32): string
-    {
-        $charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}<>?';
-        $max = \strlen($charset) - 1;
-        $secret = '';
-
-        for ($i = 0; $i < $length; ++$i) {
-            $secret .= $charset[random_int(0, $max)];
-        }
-
-        return $secret;
     }
 }

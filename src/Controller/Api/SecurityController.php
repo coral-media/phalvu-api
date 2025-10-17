@@ -10,11 +10,15 @@
 namespace App\Controller\Api;
 
 use App\Model\User;
+use Phalcon\Encryption\Security;
 use Phalcon\Encryption\Security\JWT\Builder;
 use Phalcon\Encryption\Security\JWT\Exceptions\ValidatorException;
 use Phalcon\Encryption\Security\JWT\Signer\Hmac;
 use Phalcon\Http\Response;
 
+/**
+ * @property Security $security
+ */
 class SecurityController extends AbstractApiController
 {
     public function loginAction(): Response
@@ -33,7 +37,7 @@ class SecurityController extends AbstractApiController
 
         $user = User::findByEmail($email);
 
-        if (!$user || !$user->verifyPassword($password)) {
+        if (!$user || !$this->security->checkHash($password, $user->password)) {
             return $this->json(['error' => 'Invalid credentials'], 401);
         }
 

@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace App\Provider;
 
-use App\Http\Middleware\JwtTokenAuth;
+use App\Http\Middleware\JwtToken;
 use Phalcon\Cli\Dispatcher as CliDispatcher;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
@@ -25,7 +25,7 @@ class DispatcherProvider implements ServiceProviderInterface
     public function register(DiInterface $di): void
     {
         /** @var ManagerInterface $eventsManager */
-        $eventsManager = $di->get('eventsManager');
+        $eventsManager = $di->getShared('eventsManager');
 
         $di->set($this->providerName, function () use ($eventsManager, $di) {
             if ($di->getShared('app.isCli') === false) {
@@ -49,7 +49,7 @@ class DispatcherProvider implements ServiceProviderInterface
 
                 // Attach middleware only for certain namespaces
                 if ('App\\Controller\\Api' === $namespace) {
-                    $eventsManager->attach('dispatch:beforeExecuteRoute', new JwtTokenAuth());
+                    $eventsManager->attach('dispatch:beforeExecuteRoute', new JwtToken());
                 }
 
                 return $dispatcher;
