@@ -15,8 +15,9 @@ use Phalcon\Encryption\Security\JWT\Token\Parser;
 use Phalcon\Events\Event;
 use Phalcon\Http\Response;
 use Phalcon\Mvc\Dispatcher;
+use Random\RandomException;
 
-class JwtTokenAuth extends Injectable
+class JwtToken extends Injectable
 {
     public function beforeExecuteRoute(Event $event, Dispatcher $dispatcher): bool
     {
@@ -30,11 +31,12 @@ class JwtTokenAuth extends Injectable
 
         $authHeader = $this->request->getHeader('Authorization');
 
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
-            return $this->unauthorized('Missing or malformed Authorization header');
+        if (!$authHeader || 0 !== stripos($authHeader, 'bearer ')) {
+            $this->unauthorized('Missing or malformed Authorization header');
+            return false;
         }
 
-        $tokenString = trim(str_replace('Bearer', '', $authHeader));
+        $tokenString = trim(str_ireplace('bearer', '', $authHeader));
 
         try {
             $parser = new Parser();
@@ -42,14 +44,15 @@ class JwtTokenAuth extends Injectable
 
             $signer = new Hmac();
             $secret = $this->config->get('jwt')->secret;
-            ;
 
             if (!$token->verify($signer, $secret)) {
-                return $this->unauthorized('Invalid token signature');
+                $this->unauthorized('Invalid token signature');
+                return false;
             }
 
             if ($token->getClaims()->has('exp') && time() >= $token->getClaims()->get('exp')) {
-                return $this->unauthorized('Token expired');
+                $this->unauthorized('Token expired');
+                return false;
             }
 
             // Share user ID in DI
@@ -58,17 +61,34 @@ class JwtTokenAuth extends Injectable
             return true;
 
         } catch (\Throwable $e) {
-            return $this->unauthorized('Invalid token format');
+            $this->unauthorized('Invalid token format');
         }
+        return false;
     }
 
-    private function unauthorized(string $message): bool
+    private function unauthorized(string $message): void
     {
-        $response = new Response();
-        $response->setStatusCode(401);
-        $response->setJsonContent(['error' => $message]);
-        $response->send();
-        return false;
+        $this->response->setStatusCode(401);
+        $this->response->setJsonContent(['error' => $message]);
+    }
+
+    /**
+     * Generates a secure random string equivalent to:
+     * tr -dc 'A-Za-z0-9!@#$%^&*()-_=+[]{}<>?' </dev/urandom | head -c 32
+     *
+     * @throws RandomException
+     */
+    public static function generateRandomSecret(int $length = 32): string
+    {
+        $charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}<>?';
+        $max = \strlen($charset) - 1;
+        $secret = '';
+
+        for ($i = 0; $i < $length; ++$i) {
+            $secret .= $charset[random_int(0, $max)];
+        }
+
+        return $secret;
     }
 
 }

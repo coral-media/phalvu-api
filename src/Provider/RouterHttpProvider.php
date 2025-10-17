@@ -30,6 +30,7 @@ class RouterHttpProvider implements ServiceProviderInterface
      * @param DiInterface $di
      *
      * @return void
+     * @throws Exception
      */
     public function register(DiInterface $di): void
     {
@@ -39,7 +40,14 @@ class RouterHttpProvider implements ServiceProviderInterface
          */
         $cache = $di->getShared('cache');
 
-        $di->setShared($this->providerName, function () use ($routerProvider, $cache, $di) {
+        $routes = BASE_PATH . '/config/routes.php';
+        if (!file_exists($routes) || !is_readable($routes)) {
+            throw new Exception($routes . ' file does not exist or is not readable.');
+        }
+
+        $routesConfig = require_once $routes;
+
+        $di->setShared($this->providerName, function () use ($routesConfig, $routerProvider, $cache, $di) {
 
             $cachedRouter = $cache->get('httpRouter');
 
@@ -47,14 +55,7 @@ class RouterHttpProvider implements ServiceProviderInterface
                 return $cachedRouter;
             }
 
-            $routes = BASE_PATH . '/config/routes.php';
-            if (!file_exists($routes) || !is_readable($routes)) {
-                throw new Exception($routes . ' file does not exist or is not readable.');
-            }
-
-            $routesConfig = require_once $routes;
-
-            $router = new Router($routesConfig['http']['default']);
+            $router = new Router($routesConfig['http']['default'] ?? false);
 
             if (null !== $routesConfig['http']['groups']) {
                 $routerProvider->mountConfiguredRoutes($router, $routesConfig['http']['groups']);
@@ -66,7 +67,7 @@ class RouterHttpProvider implements ServiceProviderInterface
                 'action'     => 'notFound',
             ]);
 
-            $cache->set('router', $router);
+            $cache->set('httpRouter', $router);
 
             return $router;
         });

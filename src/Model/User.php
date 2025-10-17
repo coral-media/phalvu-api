@@ -30,7 +30,7 @@ class User extends AbstractModel
     public function beforeSave(): void
     {
         if ($this->hasChanged('password')) {
-            $this->password = $this->getDI()->get('security')->hash($this->password);
+            $this->password = $this->getDI()->getShared('security')->hash($this->password);
         }
     }
 
@@ -40,11 +40,6 @@ class User extends AbstractModel
             'conditions' => 'email = :email:',
             'bind'       => ['email' => $email],
         ]);
-    }
-
-    public function verifyPassword(string $password): bool
-    {
-        return $this->getDI()->get('security')->checkHash($password, $this->password);
     }
 
     public function columnMap(): array

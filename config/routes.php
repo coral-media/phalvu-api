@@ -34,6 +34,12 @@ return [
                 'namespace' => 'App\\Controller\\Api',
                 'prefix' => '/api/',
                 'routes' => [
+                    'default' => [
+                        'pattern'    => 'default/index',
+                        'controller' => 'default',
+                        'action'     => 'index',
+                        'methods'    => ['GET'],
+                    ],
                     'security_login' => [
                         'pattern'    => 'security/login',
                         'controller' => 'security',

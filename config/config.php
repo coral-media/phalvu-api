@@ -18,6 +18,7 @@ $dotenv = Dotenv\Dotenv::createMutable(\dirname(__DIR__));
 $dotenv->safeLoad();
 
 $config = [
+    'env' => env('APP_ENV'),
     'database'    => [
         'adapter'  => env('DB_ADAPTER'),
         'host'     => env('DB_HOST'),
